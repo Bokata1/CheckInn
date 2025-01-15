@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Acc overview : data change,password,payments   -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - CheckInn</title>
+  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        
+
+        .container-wrapper {
+            display: flex;
+            margin: 2rem auto;
+            max-width: 1200px;
+        }
+
+        .sidebar {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 300px;
+            padding: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #343a40;
+            font-weight: 500;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: #e1f5fe;
+            color: #0d6efd;
+        }
+
+        .content {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+            margin-left: 1rem;
+            padding: 2rem;
+        }
+        
+        .profile-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            flex-grow: 1;
+            max-width: 1200px;
+        }
+
+        .profile-header {
+            position: relative;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-header img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 3px solid #6a11cb;
+        }
+
+        #uploadBtn {
+            position: absolute;
+            top: 5%;
+            right: 35%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: none;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.5rem;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .profile-info {
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .profile-info span {
+            font-weight: 600;
+        }
+
+        .edit-link {
+            color: #2575fc;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .edit-link:hover {
+            text-decoration: underline;
+        }
+        .section {
+    display: none;
+    opacity: 0; 
+    transition: opacity 0.5s ease-in-out; 
+}
+
+.section.active {
+    display: block; 
+    opacity: 1;
+} 
+
+
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #6a11cb;
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .instruction-message {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div id="overview-link" class="menu-item active" onclick="navigateTo('acc-overview.html')">Лични данни</div>
+            <div id="security-link" class="menu-item" onclick="navigateTo('sec.html')">Настройки за сигурност</div>
+            <div id="payment-link" class="menu-item " onclick="navigateTo('payment.html')">Платежни методи</div>
+        </div>
+
+    
+        <div  class="profile-container">
+        <div class="profile-header">
+            <img id="profileImage" src="imgs/blank.png" alt="Profile Picture">
+            <button id="uploadBtn" onclick="document.getElementById('fileInput').click();" title="Upload Photo">
+                <i class="bi bi-camera"></i>
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="uploadImage(event)">
+            <h2 class="mt-2" id="profile-name"></h2>
+        </div>
+        
+        <div class="content">
+            <!-- Personal Information -->
+            <div class="section-title">Лични данни</div>
+        <div class="profile-info">
+            <div><span>Име:</span> <span id="name-value"></span></div>
+            <div><a href="#" class="edit-link" onclick="openModal('name', 'Име', 'letters')">Редактиране</a></div>
+        </div>
+        <div class="profile-info">
+            <div><span>Display name:</span> <span id="display-name-value"></span></div>
+            <div><a href="#" class="edit-link" onclick="openModal('display-name', 'Показвано име', 'letters')">Редактиране</a></div>
+        </div>
+        <div class="profile-info">
+            <div><span>Дата на раждане:</span> <span id="birthdate-value"></span></div>
+            <div><a href="#" class="edit-link" onclick="openModal('birthdate', 'Дата на раждане', 'date')">Редактиране</a></div>
+        </div>
+        <div class="profile-info">
+            <div><span>Пол:</span> <span id="gender-value"></span></div>
+            <div><a href="#" class="edit-link" onclick="openModal('gender', 'Пол', 'dropdown')">Редактиране</a></div>
+        </div>
+        <div class="profile-info">
+            <div><span>Телефонен номер:</span> <span id="phone-value"></span></div>
+            <div><a href="#" class="edit-link" onclick="openModal('phone', 'Телефонен номер', 'numbers')">Редактиране</a></div>
+        </div>
+        <div class="profile-info">
+            <div><span>Адрес:</span> <span id="address-value"></span></div>
+            <div><a href="#" class="edit-link" onclick="openModal('address', 'Адрес', 'instruction')">Редактиране</a></div>
+        </div>
+        <div class="profile-info">
+            <div><span>Държава:</span> <span id="country-value"></span></div>
+            <div><a href="#" class="edit-link" onclick="openModal('country', 'Държава', 'letters')">Редактиране</a></div>
+        </div>
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Редактиране</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="editInput" class="form-label" id="modal-label"></label>
+                        <input type="text" id="editInput" class="form-control">
+                        <select id="editDropdown" class="form-select" style="display: none;">
+                            <option>Изберете вашия пол</option>
+                            <option>Аз съм мъж</option>
+                            <option>Аз съм жена</option>
+                            <option>Аз съм небинарен човек</option>
+                            <option>Предпочитам да не казвам</option>
+                        </select>
+                        <div id="errorMessage" class="error-message"></div>
+                        <div id="instructionMessage" class="instruction-message">Моля въведете улица, град и пощенски код</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Затвори</button>
+                        <button type="button" class="btn btn-primary" onclick="saveChanges()">Запази</button>
+                    </div>
+                        
+    
+                </div>
+            </div>
+
+</div>
+</div>
+</div>
+            
+</div>
+    </div>
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentFieldId;
+        let validationType;
+        const isPhoneValid = validateInput("phone-value", "numbers");
+        function validateInput(inputId, type) {
+    const inputElement = document.getElementById(inputId);
+    const errorElement = document.createElement("div");
+    errorElement.classList.add("text-danger", "small", "error-msg");
+
+  
+    if (inputElement.nextElementSibling && inputElement.nextElementSibling.classList.contains("error-msg")) {
+        inputElement.nextElementSibling.remove();
+    }
+
+    const value = inputElement.value.trim();
+    let isValid = true;
+
+    switch (type) {
+        case "letters":
+            isValid = /^[a-zA-Zа-яА-Я\s]+$/.test(value);
+            break;
+        case "numbers":
+            isValid = /^\d{9,11}$/.test(value); 
+            break;
+        case "birthdate":
+            isValid = /^\d{2}\.\d{2}\.\d{4}$/.test(value); 
+            break;
+            default:
+            isValid = false;
+    }
+
+    if (!isValid) {
+        errorElement.textContent = "Моля въведете валидни данни";
+        inputElement.after(errorElement);
+    }
+
+    return isValid;
+}
+
+function setupValidation() {
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault(); 
+
+        
+        const isNameValid = validateInput("name-value", "letters");
+        const isCountryValid = validateInput("country-value", "letters");
+        const isPhoneValid = validateInput("phone-value", "numbers");
+        const isBirthdateValid = validateInput("birthdate-value", "birthdate");
+
+        if (isNameValid && isCountryValid && isPhoneValid && isBirthdateValid) {
+            alert("Данните са успешно записани!"); // оk
+            form.submit(); 
+        }
+    });
+}
+    //извикване на валидация
+    document.addEventListener('DOMContentLoaded', () => {
+    setupValidation();
+    });
+
+function saveFormData() {
+    const inputs = document.querySelectorAll("input, select"); 
+    const formData = {};
+
+    inputs.forEach(input => {
+        formData[input.id] = input.value; 
+    });
+
+    // Store 
+    sessionStorage.setItem("formData", JSON.stringify(formData));
+}
+
+        
+function loadFormData() {
+    const savedData = JSON.parse(sessionStorage.getItem("formData"));
+
+    if (savedData) {
+        Object.keys(savedData).forEach(id => {
+            const input = document.getElementById(id);
+            if (input) input.value = savedData[id]; // Restore the value
+        });
+    }
+}
+    
+
+        //  active menu 
+        function highlightActiveMenu() {
+             // Split-вам и получаване на текущото име на страницата от URL-то
+            const currentPage = window.location.pathname.split('/').pop();
+             // махане на active клас 
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            
+            // по id правене на active 
+            if (currentPage === 'acc-overview.html') {
+                document.getElementById('overview-link').classList.add('active');
+            } else if (currentPage === 'sec.html') {
+                document.getElementById('security-link').classList.add('active');
+            } else if (currentPage === 'payment.html') {
+                document.getElementById('payment-link').classList.add('active');
+            }
+            
+
+        }
+
+
+        // Navigate to other pages
+        function navigateTo(page) {
+            saveFormData(); 
+            window.location.href = page; 
+        }
+
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFormData(); 
+            highlightActiveMenu(); 
+            setupValidation();
+        });
+        
+
+    
+
+    
+
+        function openModal(fieldId, label, type) {
+            currentFieldId = fieldId;
+            validationType = type;
+            document.getElementById('modal-label').textContent = `Редактиране на ${label}`;
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('instructionMessage').style.display = (type === 'instruction') ? 'block' : 'none';
+
+            if (type === 'dropdown') {
+                document.getElementById('editDropdown').style.display = 'block';
+                document.getElementById('editInput').style.display = 'none';
+            } else {
+                document.getElementById('editDropdown').style.display = 'none';
+                document.getElementById('editInput').style.display = 'block';
+                document.getElementById('editInput').value = document.getElementById(`${fieldId}-value`).textContent || '';
+            }
+
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+
+        function saveChanges() {
+            const errorMessage = document.getElementById('errorMessage');
+            const value = validationType === 'dropdown'
+                ? document.getElementById('editDropdown').value
+                : document.getElementById('editInput').value.trim();
+
+            if (validationType === 'numbers' && !/^\d+$/.test(value)) {
+                errorMessage.textContent = "Моля въведете валиден телефонен номер(минимум 9 цифри, максимум 11 цифри)";
+            } else if (validationType === 'letters' && !/^[a-zA-Zа-яА-Я\s]+$/.test(value)) {
+                errorMessage.textContent = "Моля въведете валидни данни";
+            } else {
+                document.getElementById(`${currentFieldId}-value`).textContent = value;
+
+                if (currentFieldId === 'display-name') {
+                    document.getElementById('profile-name').textContent = value;
+                }
+                bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                return;
+            }
+            errorMessage.style.display = 'block';
+        }
+        
+        function uploadImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById('profileImage').src = e.target.result;
+                reader.readAsDataURL(file);
+            }
+        }
+       
+        
+    </script>
+</body>
+</html>

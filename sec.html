@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Sec settings -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки за сигурност</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .container-wrapper {
+            display: flex;
+            margin: 2rem auto;
+            max-width: 1200px;
+        }
+        .sidebar {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 300px;
+            padding: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .menu-item {
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background-color: #e1f5fe;
+            color: #0d6efd;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #6a11cb;
+        }
+        .delete-btn {
+            margin-top: 1.5rem;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="menu-item" onclick="navigateTo('acc-overview.html')">Лични данни</div>
+            <div class="menu-item active" onclick="navigateTo('sec.html')">Настройки за сигурност</div>
+            <div class="menu-item" onclick="navigateTo('payment.html')">Платежни методи</div>
+        </div>
+
+        
+        <div class="content">
+            <h2 class="section-title">Настройки за сигурност</h2>
+            
+            <!-- Change Password Form -->
+            <form id="password-form">
+                <div class="mb-3">
+                    <label for="current-password" class="form-label">Текуща парола</label>
+                    <input type="password" id="current-password" class="form-control" placeholder="Въведете текущата парола">
+                </div>
+                <div class="mb-3">
+                    <label for="new-password" class="form-label">Нова парола</label>
+                    <input type="password" id="new-password" class="form-control" placeholder="Въведете нова парола">
+                </div>
+                <div class="mb-3">
+                    <label for="confirm-password" class="form-label">Потвърдете новата парола</label>
+                    <input type="password" id="confirm-password" class="form-control" placeholder="Потвърдете новата парола">
+                </div>
+                <button type="submit" class="btn btn-primary">Промени паролата</button>
+            </form>
+
+            <!-- Delete Acc -->
+            <button class="btn delete-btn" id="delete-account-btn">Изтрий акаунта</button>
+        </div>
+    </div>
+
+    
+    <script>
+        // Navigate 
+        function navigateTo(page) {
+            saveFormData(); // Save 
+            window.location.href = page;
+        }
+
+        // Save 
+        function saveFormData() {
+            const passwordData = {
+                currentPassword: document.getElementById('current-password').value,
+                newPassword: document.getElementById('new-password').value,
+                confirmPassword: document.getElementById('confirm-password').value
+            };
+            localStorage.setItem('securitySettingsData', JSON.stringify(passwordData));
+        }
+
+        // Load form 
+        function loadFormData() {
+            const savedData = JSON.parse(localStorage.getItem('securitySettingsData'));
+            if (savedData) {
+                document.getElementById('current-password').value = savedData.currentPassword || '';
+                document.getElementById('new-password').value = savedData.newPassword || '';
+                document.getElementById('confirm-password').value = savedData.confirmPassword || '';
+            }
+        }
+
+        // Confirm account deletion
+        function confirmAccountDeletion() {
+            if (confirm("Сигурни ли сте, че искате да изтриете акаунта си? Това действие не може да бъде отменено.")) {
+                alert("Акаунтът е изтрит успешно.");
+                localStorage.clear(); // Clear all saved data
+                window.location.href = 'account-overview.html';
+            }
+        }
+
+        // Load 
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFormData();
+            document.getElementById('delete-account-btn').addEventListener('click', confirmAccountDeletion);
+        });
+
+        // Save form data 
+        document.getElementById('password-form').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent page reload
+            saveFormData();
+            alert('Паролата е променена успешно!');
+        });
+    </script>
+</body>
+</html>
